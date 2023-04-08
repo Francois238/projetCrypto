@@ -1,0 +1,12 @@
+<h1 class="form-title">Confirmation de Certificat</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="opt">Code OPT</label>
+    <input type="text" id="opt" formControlName="opt">
+  </div>
+  <button type="submit" [disabled]="form.invalid" routerLink="/telechargement">
+    <i class="fa fa-paper-plane"></i> Confirmer
+  </button>
+</form>
+

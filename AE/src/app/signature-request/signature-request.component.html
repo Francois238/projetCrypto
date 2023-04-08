@@ -1,0 +1,27 @@
+<!--<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="email">Email</label>
+    <input type="email" id="email" formControlName="email">
+  </div>
+  <div>
+    <label for="csr">CSR</label>
+    <textarea id="csr" formControlName="csr"></textarea>
+  </div>
+  <button type="submit" [disabled]="form.invalid">Submit</button>
+</form>-->
+
+<h1 class="form-title">Demande de Certificat</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" formControlName="email">
+  </div>
+  <div class="form-group">
+    <label for="csr">CSR</label>
+    <textarea id="csr" formControlName="csr"></textarea>
+  </div>
+  <button type="submit" [disabled]="form.invalid" routerLink="/confirmation">
+    <i class="fa fa-paper-plane"></i> Envoyer
+  </button>
+</form>
