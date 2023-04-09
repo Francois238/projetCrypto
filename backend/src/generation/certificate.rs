@@ -1,24 +1,14 @@
 use std::fs;
 
 use openssl::{x509::X509Req, rand};
-use serde::{Serialize, Deserialize};
 
 use crate::api_error::ApiError;
 
 
 
-
-#[derive(Serialize, Deserialize, Clone)]
-pub struct DataReceived { //Structure inseree en BDD pour ajouter un user
-    pub mail : String,
-    pub csr_content: String,
-}
-
 pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, ApiError> {
 
    // let csr_content = fs::read_to_string("mycertif.csr").expect("Should have been able to read the file");
-
-    println!("CSR : {}", csr_content);
 
     let csr = X509Req::from_pem(csr_content.as_bytes()); //converti le csr en pem
 
@@ -97,7 +87,9 @@ pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, Ap
 }
 
 
-pub fn create_certificate(csr : X509Req) -> Result<String, ApiError> {
+pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
+
+    //extraction de la clé privée et du certificat de l'ACI
 
     let ca_key_string = fs::read_to_string("ACI.key").expect("Should have been able to read the file");
 
@@ -106,6 +98,16 @@ pub fn create_certificate(csr : X509Req) -> Result<String, ApiError> {
     let ca_cert_string = fs::read_to_string("ACI.crt").expect("Should have been able to read the file");
 
     let ca_cert = openssl::x509::X509::from_pem(ca_cert_string.as_bytes()).unwrap();
+
+
+    //convertion String en X509Req
+    let csr = X509Req::from_pem(csr_content.as_bytes()); //converti le csr en pem
+
+    if csr.is_err() {
+        return Err(ApiError::new(400, "Le CSR n'est pas un PEM".to_string())); //en cas d erreur
+    }
+
+    let csr = csr.unwrap();
 
 
     let mut buf = [0; 20];
@@ -171,8 +173,6 @@ pub fn create_certificate(csr : X509Req) -> Result<String, ApiError> {
     let cert = cert.to_pem().unwrap();
    
     let certificat = String::from_utf8(cert.clone()).unwrap(); //lecture du certificat en string
-   
-    println!("Certificat : {}", certificat);
    
     fs::write("cert.pem", cert).expect("Unable to write file");
 

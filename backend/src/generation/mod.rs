@@ -1,5 +1,9 @@
-mod model;
+mod certificate;
 mod routes;
+mod verification;
+mod structure;
 
-pub use model::*;
+pub use certificate::*;
 pub use routes::*;
+pub use verification::*;
+pub use structure::*;

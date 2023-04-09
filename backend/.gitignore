@@ -3,3 +3,4 @@ ACI.crt
 ACI.key
 cert.pem
 mycertif.csr
+verification.json
