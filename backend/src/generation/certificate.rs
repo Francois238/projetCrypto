@@ -134,7 +134,7 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
    
        //issuer du certificat
    
-    let issuer = ca_cert.issuer_name();
+    let issuer = ca_cert.subject_name();
    
     cert.set_issuer_name(issuer).unwrap();
 
