@@ -2,8 +2,8 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="form-group">
-    <label for="opt">Code de confirmation</label>
-    <input type="text" id="opt" formControlName="opt">
+    <label for="otp">Code de confirmation</label>
+    <input type="text" id="otp" formControlName="otp">
   </div>
   <button type="submit" [disabled]="form.invalid">
     <i class="fa fa-paper-plane"></i> Confirmer

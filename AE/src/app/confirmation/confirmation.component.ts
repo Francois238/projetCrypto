@@ -19,17 +19,21 @@ export class ConfirmationComponent {
 
   constructor(private formBuilder: FormBuilder, private apiCallService: ApiCallService) {
     this.form = this.formBuilder.group({
-      opt: ['', Validators.required]
+      otp: ['', Validators.required]
     });
   }
 
   onSubmit() {
     if (this.form.valid) {
       
-      console.log(this.form.value.opt);
+      console.log(this.form.value.otp);
+
+      let otpData = this.form.value.otp as string
+
+      let OtpTtrim = otpData.trim(); //enlever les espaces debut et fin au cas ou
       
       let formData : CodeSent = {
-        code: this.form.value.opt as string
+        code: OtpTtrim
       }
 
       this.apiCallService.SendCode(formData).subscribe({

@@ -34,12 +34,20 @@ export class SignatureRequestComponent {
       console.log(this.form.value.email);
       console.log(this.form.value.csr);  
 
-      this.csrSent = window.btoa(this.form.value.csr);
+      let mailContent = this.form.value.email as string
+
+      let CsrContent = this.form.value.csr as string
+
+      let mailContenttrim = mailContent.trim(); //enlever les espaces debut et fin au cas ou
+
+      let CsrContenttrim = CsrContent.trim(); //enlever les espaces debut et fin au cas ou
+
+      this.csrSent = window.btoa(CsrContenttrim);
 
       console.log(this.csrSent);
 
       let formData : CsrSent = {
-        mail: this.form.value.email as string,
+        mail: mailContenttrim,
         csr_content: this.csrSent
       }
 
