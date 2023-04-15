@@ -2,11 +2,29 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="form-group">
-    <label for="opt">Code OPT</label>
+    <label for="opt">Code de confirmation</label>
     <input type="text" id="opt" formControlName="opt">
   </div>
-  <button type="submit" [disabled]="form.invalid" routerLink="/telechargement">
+  <button type="submit" [disabled]="form.invalid">
     <i class="fa fa-paper-plane"></i> Confirmer
   </button>
 </form>
 
+<ng-container *ngIf="otp.length>0" >
+
+  <div class="form-group">
+
+    <p >Votre code otp est : {{otp}}</p>
+
+    
+    <label for="csr">Votre certificat</label>
+    <textarea id="csr" rows="10" cols="50" [textContent]="certificate"></textarea>
+
+    <label for="csr">Le certificat de l'autorite</label>
+    <textarea id="csr" rows="10" cols="50" [textContent]="certificateChain"></textarea>
+
+  </div>
+
+</ng-container>
+
+<p>{{messageErreur}}</p>

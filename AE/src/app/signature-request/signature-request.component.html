@@ -19,9 +19,13 @@
   </div>
   <div class="form-group">
     <label for="csr">CSR</label>
-    <textarea id="csr" formControlName="csr"></textarea>
+    <textarea id="csr" formControlName="csr" rows="10" cols="50"></textarea>
   </div>
-  <button type="submit" [disabled]="form.invalid" routerLink="/confirmation">
+  <button type="submit" [disabled]="form.invalid">
     <i class="fa fa-paper-plane"></i> Envoyer
   </button>
 </form>
+
+<div>
+  <p>{{messageErreur}}</p>
+</div>

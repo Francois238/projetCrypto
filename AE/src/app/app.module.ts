@@ -9,7 +9,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { TelechargementComponent } from './telechargement/telechargement.component';
 import { SupprimerComponent } from './supprimer/supprimer.component';
-
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,8 @@ import { SupprimerComponent } from './supprimer/supprimer.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
