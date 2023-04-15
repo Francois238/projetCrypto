@@ -3,8 +3,9 @@ use std::fs;
 use openssl::{x509::X509Req, rand};
 
 use crate::api_error::ApiError;
+use base64::{engine::general_purpose, Engine};
 
-
+use super::CertificatStored;
 
 pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, ApiError> {
 
@@ -182,3 +183,60 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
 
 
 }
+
+
+
+
+
+pub fn generate_otp_revocation() -> Result<String, ApiError> {
+    const OTP_LEN: usize = 18;
+
+    let mut password = vec![0; OTP_LEN];
+    rand::rand_bytes(&mut password).unwrap();
+
+
+    let encoded_password =  general_purpose::URL_SAFE.encode(password);
+
+    let otp = encoded_password[..16].to_string(); //pour enlever les = de la fin au cas ou
+
+    Ok(otp)
+
+    
+}
+
+
+pub fn save_certificate(mail: String, certificat : String) -> Result<String, ApiError> {
+
+    let otp = generate_otp_revocation()?; //generation d'un otp de révocation
+
+
+    let certifif = CertificatStored {
+        mail : mail.clone(),
+        otp : otp.clone(),
+        certificat : certificat
+    };
+
+    let mut tab_cert : Vec<CertificatStored> = Vec::new();
+
+    let tab_cert_file = fs::read_to_string("liste_certificats.json");
+
+    if tab_cert_file.is_ok(){ //le fichier existe
+
+        tab_cert = serde_json::from_str(&tab_cert_file.unwrap()).unwrap();
+
+    }
+
+    tab_cert.push(certifif);
+
+    let tab_cert = serde_json::to_string(&tab_cert).unwrap();
+
+    fs::write("liste_certificats.json", tab_cert).expect("Unable to write file");
+    
+    Ok(otp)
+
+
+
+}
+
+
+ 

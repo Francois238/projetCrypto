@@ -1,8 +1,11 @@
-use crate::api_error::ApiError;
 
+use std::fs;
+
+use crate::api_error::ApiError;
 use actix_web::{ post, web,  HttpResponse};
 use base64::{engine::general_purpose, Engine};
 use crate::generation::*;
+
 
 #[post("/send_csr")]
 pub async fn received_csr(data_certificat: web::Json<CsrReceived>) -> Result<HttpResponse, ApiError> {
@@ -28,7 +31,11 @@ pub async fn received_code(data_received: web::Json<CodeReceived>) -> Result<Htt
 
     let data = data_received.into_inner();
 
-    let csr_base64 = verification_code(data.mail.clone(), data.code)?;
+    let verif = verification_code(data.code)?;
+
+    let csr_base64 = verif.0;
+
+    let mail = verif.1;
 
     let csr_vec = general_purpose::STANDARD.decode(csr_base64.as_bytes()).unwrap();
 
@@ -38,11 +45,25 @@ pub async fn received_code(data_received: web::Json<CodeReceived>) -> Result<Htt
 
     let certificat_encoded = general_purpose::STANDARD.encode(certificat.as_bytes());
 
-    Ok(HttpResponse::Ok().json(certificat_encoded))
+    let otp = save_certificate(mail, certificat_encoded.clone())?;
+
+    let ca_chain_stored = fs::read_to_string("ca_chain.crt").expect("erreur pas de chain.crt");
+
+    let ca_chain = general_purpose::STANDARD.encode(ca_chain_stored.as_bytes());
+
+
+    let certificat_envoye = CertificatSend {
+        certificate : certificat_encoded,
+        certicate_chain : ca_chain,
+        otp : otp
+    };
+
+    Ok(HttpResponse::Ok().json(certificat_envoye))
 
 
 
 }
+
 
 
 
