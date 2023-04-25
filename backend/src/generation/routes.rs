@@ -31,11 +31,9 @@ pub async fn received_code(data_received: web::Json<CodeReceived>) -> Result<Htt
 
     let data = data_received.into_inner();
 
-    let verif = verification_code(data.code)?;
+    let mail = data.mail.clone();
 
-    let csr_base64 = verif.0;
-
-    let mail = verif.1;
+    let csr_base64 = verification_code(data.code, &mail)?;
 
     let csr_vec = general_purpose::STANDARD.decode(csr_base64.as_bytes()).unwrap();
 
@@ -43,9 +41,9 @@ pub async fn received_code(data_received: web::Json<CodeReceived>) -> Result<Htt
 
     let certificat = create_certificate(csr)?;
 
-    let certificat_encoded = general_purpose::STANDARD.encode(certificat.as_bytes());
+    let certificat_encoded = general_purpose::STANDARD.encode(certificat.clone().as_bytes());
 
-    let otp = save_certificate(mail, certificat_encoded.clone())?;
+    let otp = save_certificate(mail,  certificat)?;
 
     let ca_chain_stored = fs::read_to_string("ca_chain.crt").expect("erreur pas de chain.crt");
 

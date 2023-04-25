@@ -1,4 +1,5 @@
 /target/
+/certificate_stored/
 cert.pem
 verification.json
 liste_certificats.json

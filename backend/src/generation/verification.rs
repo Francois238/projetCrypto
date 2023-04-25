@@ -84,7 +84,7 @@ pub async fn store_confirmation(mail: String, confirmation_code : String, req_cs
 }
 
 
-pub fn verification_code(code: String) -> Result<(String, String), ApiError> {
+pub fn verification_code(code: String, mail : &str) -> Result<String, ApiError> {
 
     let tab_verif_file = fs::read_to_string("verification.json");
 
@@ -96,11 +96,9 @@ pub fn verification_code(code: String) -> Result<(String, String), ApiError> {
 
             let confirmation = &tab_verif[index];
 
-            if confirmation.confirmation_code == code { //si ok
+            if confirmation.confirmation_code == code && confirmation.mail == mail  { //si ok
 
                 let csr = confirmation.req_csr.clone();
-
-                let mail = confirmation.mail.clone();
 
                 tab_verif.remove(index); //On supprime l'element du tableau
 
@@ -108,7 +106,7 @@ pub fn verification_code(code: String) -> Result<(String, String), ApiError> {
 
                 fs::write("verification.json", tab_verif).expect("Unable to write file"); //On ecrit le nouveau tableau
 
-                return Ok((csr, mail));
+                return Ok(csr);
 
             }
         }

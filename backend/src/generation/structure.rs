@@ -9,6 +9,7 @@ pub struct CsrReceived { //Structure recue pour creer un certificat
 
 #[derive(Serialize, Deserialize)]
 pub struct CodeReceived { //Structure recue pour confirmer le mail
+    pub mail : String,
     pub code: String,
 }
 
