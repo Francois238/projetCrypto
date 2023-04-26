@@ -1,4 +1,5 @@
 /target/
+/certificate_stored/*.crt
 verification.json
 liste_certificats.json
 liste_motifs.json
