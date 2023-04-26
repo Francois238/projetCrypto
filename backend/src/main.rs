@@ -11,7 +11,7 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init();
 
-    run_ocsp_server().expect("impossible de lancer le serveur ocsp");
+    run_ocsp_server().expect("impossible de lancer le serveur ocsp"); //on lance le serveur ocsp pour la 1ere fois
 
 
     HttpServer::new(|| {

@@ -1,5 +1,6 @@
 
-use std::fs;
+use std::fs::{self, File};
+use std::path::Path;
 use std::process::{Command, Stdio};
 
 use crate::api_error::ApiError;
@@ -120,6 +121,14 @@ fn revocation(file : String) -> Result<(), ApiError> {
 
 
 pub fn run_ocsp_server() -> Result<(), ApiError>{
+
+
+    let file = Path::new("demoCA/index.txt");
+
+    if !file.exists() { //si le fichier n'existe pas on le crée
+        let _index = File::create("demoCA/index.txt").map_err(|_| ApiError::new(500, "Impossible de créer le fichier index.txt".to_string()))?;
+    }
+    
 
     //executer commande suivant : openssl ocsp -index ../demoCA/index.txt -port 9999 -rsigner ocsp.crt -rkey ocsp.key -CA ACI.crt -text -out /tmp/ocsp.log
 
