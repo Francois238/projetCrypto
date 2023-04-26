@@ -1,7 +1,7 @@
 
 use std::fs;
 
-use crate::api_error::ApiError;
+use crate::{api_error::ApiError, revocation};
 use actix_web::{ post, web,  HttpResponse};
 use base64::{engine::general_purpose, Engine};
 use crate::generation::*;
@@ -63,10 +63,23 @@ pub async fn received_code(data_received: web::Json<CodeReceived>) -> Result<Htt
 }
 
 
+#[post("/revocation")]
+pub async fn received_revocation(data_received: web::Json<RevocationReceived>) -> Result<HttpResponse, ApiError> {
+
+    let data = data_received.into_inner();
+
+    let _ = revocation::revocation_ext(data.mail, data.code, data.motif)?;
+
+    Ok(HttpResponse::Ok().finish())
+
+}
+
+
 
 
 pub fn routes_user(cfg: &mut web::ServiceConfig) {
     cfg.service(received_csr);
     cfg.service(received_code);
+    cfg.service(received_revocation);
 
 }

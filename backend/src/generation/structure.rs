@@ -34,3 +34,9 @@ pub struct CertificatSend{
     pub otp : String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct RevocationReceived { //Structure recue pour confirmer le mail
+    pub mail : String,
+    pub code: String,
+    pub motif : String,
+}

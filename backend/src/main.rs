@@ -1,13 +1,17 @@
 use actix_cors::Cors;
 use actix_web::{ App, HttpServer, http};
+use revocation::run_ocsp_server;
 
 mod api_error;
 mod generation;
+mod revocation;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
     env_logger::init();
+
+    run_ocsp_server().expect("impossible de lancer le serveur ocsp");
 
 
     HttpServer::new(|| {
