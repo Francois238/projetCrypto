@@ -1,6 +1,6 @@
 /target/
-/certificate_stored/
-cert.pem
+/certificate_stored/*
 verification.json
 liste_certificats.json
 liste_motifs.json
+ocsp_process_id
