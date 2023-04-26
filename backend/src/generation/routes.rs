@@ -4,6 +4,7 @@ use std::fs;
 use crate::{api_error::ApiError, revocation};
 use actix_web::{ post, web,  HttpResponse};
 use base64::{engine::general_purpose, Engine};
+use regex::Regex;
 use crate::generation::*;
 
 
@@ -13,6 +14,18 @@ pub async fn received_csr(data_certificat: web::Json<CsrReceived>) -> Result<Htt
     let data = data_certificat.into_inner();
 
     let csr_base64 = data.csr_content.clone();
+
+    let mail = data.mail.clone();
+
+    let regex = Regex::new(r"(?x)
+    ^(?P<login>[^@\s]+)@
+    ([[:word:]]+\.)*
+    [[:word:]]+$
+    ").unwrap();
+
+    if !regex.is_match(&mail) { //verification que le mail envoye est bien un format mail
+        return Err(ApiError::new(400, "L'adresse e-mail n'est pas valide".to_string()));
+    }
 
     let csr_vec = general_purpose::STANDARD.decode(csr_base64.as_bytes()).unwrap();
 

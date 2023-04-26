@@ -10,10 +10,7 @@ use super::CertificatStored;
 
 pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, ApiError> {
 
-   // let csr_content = fs::read_to_string("mycertif.csr").expect("Should have been able to read the file");
-
-    let csr = X509Req::from_pem(csr_content.as_bytes()); //converti le csr en pem
-
+    let csr = X509Req::from_pem(csr_content.as_bytes()); //convertir le csr en objet rust 
     if csr.is_err() {
         return Err(ApiError::new(400, "Le CSR n'est pas un PEM".to_string())); //en cas d erreur
     }
@@ -73,7 +70,7 @@ pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, Ap
     }
 
     if robuste == false {
-        return Err(ApiError::new(400, "La clé utilisee n'est pas valide. Veuillez utiliser au minimum du RSA 2048 ou EC 256".to_string()));
+        return Err(ApiError::new(400, "La clé utilisee n'est pas valide. Veuillez utiliser au minimum du RSA 2048 ou ECC 256".to_string()));
     }
 
     let valide = csr.verify(&public_key);
@@ -149,7 +146,7 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
       
     let mut key_usage = openssl::x509::extension::KeyUsage::new();
    
-    key_usage.data_encipherment(); //extension pour chiffrement de donnees
+    key_usage.digital_signature(); 
    
     cert.append_extension(key_usage.build().unwrap()).unwrap();
 
@@ -175,9 +172,7 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
    
     let cert = cert.to_pem().map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
    
-    let certificat = String::from_utf8(cert.clone()).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?; //lecture du certificat en string
-   
-    fs::write("cert.pem", cert).expect("Unable to write file");
+    let certificat = String::from_utf8(cert).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?; //lecture du certificat en string
 
 
     Ok(certificat)

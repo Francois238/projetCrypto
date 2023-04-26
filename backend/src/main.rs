@@ -15,7 +15,7 @@ async fn main() -> std::io::Result<()> {
 
 
     HttpServer::new(|| {
-
+            //pour faire fonctionner le front en local
         let cors = Cors::default()
         .allowed_origin("http://localhost:4200")
         .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
