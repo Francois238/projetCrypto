@@ -10,6 +10,7 @@ import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { TelechargementComponent } from './telechargement/telechargement.component';
 import { SupprimerComponent } from './supprimer/supprimer.component';
 import {HttpClientModule} from '@angular/common/http';
+import { ContactComponent } from './contact/contact.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {HttpClientModule} from '@angular/common/http';
     SignatureRequestComponent,
     ConfirmationComponent,
     TelechargementComponent,
-    SupprimerComponent
+    SupprimerComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,

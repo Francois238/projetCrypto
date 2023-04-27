@@ -14,21 +14,25 @@
   </button>
 </form>
 
+
 <ng-container *ngIf="otp.length>0" >
 
   <div class="form-group">
 
     <p >Votre code otp est : {{otp}}</p>
 
-    
+
     <label for="csr">Votre certificat</label>
     <textarea id="csr" rows="10" cols="50" [textContent]="certificate"></textarea>
 
     <label for="csr">Le certificat de l'autorite</label>
     <textarea id="csr" rows="10" cols="50" [textContent]="certificateChain"></textarea>
 
+    <button (click)="copyToClipboard()">Copier</button>
+
   </div>
 
 </ng-container>
+
 
 <p>{{messageErreur}}</p>

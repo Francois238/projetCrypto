@@ -10,6 +10,7 @@ import { CsrSent } from '../csr-sent';
   styleUrls: ['./signature-request.component.css']
 })
 export class SignatureRequestComponent {
+  title = 'AE';
   form!: FormGroup;
 
   csrSent = '';
@@ -32,7 +33,7 @@ export class SignatureRequestComponent {
       // Submit the form
 
       console.log(this.form.value.email);
-      console.log(this.form.value.csr);  
+      console.log(this.form.value.csr);
 
       let mailContent = this.form.value.email as string
 
@@ -58,7 +59,7 @@ export class SignatureRequestComponent {
         next: data => {
 
           this.router.navigate(['/confirmation']);
-          
+
         },
 
         error: err => {
