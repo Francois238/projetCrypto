@@ -42,6 +42,8 @@ export class SignatureRequestComponent {
 
       let CsrContenttrim = CsrContent.trim(); //enlever les espaces debut et fin au cas ou
 
+      this.apiCallService.setMail(mailContenttrim);
+
       this.csrSent = window.btoa(CsrContenttrim);
 
       console.log(this.csrSent);
@@ -62,13 +64,10 @@ export class SignatureRequestComponent {
         error: err => {
 
           if(err.status <500){
-          console.log('There was an error!', err.error.message);
-
-          this.messageErreur = err.error.message;
+            this.messageErreur = err.error.message;
           }
 
           else{
-            console.log('Erreur interne');
             this.messageErreur = 'Erreur interne';
           }
         }

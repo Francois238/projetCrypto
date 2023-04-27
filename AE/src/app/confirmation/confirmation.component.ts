@@ -16,9 +16,14 @@ export class ConfirmationComponent {
   certificate = '';
   messageErreur='';
   certificateChain = '';
+  mail = '';
 
   constructor(private formBuilder: FormBuilder, private apiCallService: ApiCallService) {
+
+    this.mail = this.apiCallService.getMail();
+
     this.form = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
       otp: ['', Validators.required]
     });
   }
@@ -31,8 +36,10 @@ export class ConfirmationComponent {
       let otpData = this.form.value.otp as string
 
       let OtpTtrim = otpData.trim(); //enlever les espaces debut et fin au cas ou
+      let mailTril = this.mail.trim();
       
       let formData : CodeSent = {
+        mail: mailTril,
         code: OtpTtrim
       }
 
@@ -50,13 +57,11 @@ export class ConfirmationComponent {
         error: err => {
 
           if(err.status <500){
-          console.log('There was an error!', err.error.message);
 
-          this.messageErreur = err.error.message;
+            this.messageErreur = err.error.message;
           }
 
           else{
-            console.log('Erreur interne');
             this.messageErreur = 'Erreur interne';
           }
         }
