@@ -41,14 +41,11 @@ pub fn revocation_ext(mail : String, otp : String, motif_revocation : String) ->
 
         revocation(certificat.certificat.clone())?; //on révoque le certificat
 
-        fs::remove_file(certificat.certificat).map_err(|_| ApiError::new(404, "Votre certificat n'existe pas".to_string()))?;
+        store_motif(motif_revocation)?; //on enregistre le motif de révocation
 
         let tab_cert = serde_json::to_string(&tab_cert).unwrap();
 
         fs::write("liste_certificats.json", tab_cert).map_err(|_| ApiError::new(500, "erreur interne".to_string()))?;
-
-        store_motif(motif_revocation)?; //on enregistre le motif de révocation
-
         
 
         Ok(())
