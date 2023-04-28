@@ -19,8 +19,18 @@ export class ConfirmationComponent {
   certificateChain = '';
   mail = '';
 
-  copyToClipboard() {
-    const textToCopy = `Votre code otp est : ${this.otp}\n\nVotre certificat:\n${this.certificate}\n\nLe certificat de l'autorité:\n${this.certificateChain}`;
+  copyToClipboardCertificatClient() {
+    const textToCopy = `${this.certificate}`;
+    const textarea = document.createElement('textarea');
+    textarea.textContent = textToCopy;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+
+  copyToClipboardCertificatAuthority() {
+    const textToCopy = `${this.certificateChain}`;
     const textarea = document.createElement('textarea');
     textarea.textContent = textToCopy;
     document.body.appendChild(textarea);
