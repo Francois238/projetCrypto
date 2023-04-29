@@ -23,7 +23,7 @@ pub fn revocation_ext(mail : String, otp : String, motif_revocation : String) ->
 
     for cert in tab_cert.iter() {
 
-        if cert.mail == mail && cert.otp == otp {
+        if cert.mail == mail && cert.otp == otp { //on a trouvé le certificat à révoquer
 
             found = true;
 
@@ -96,6 +96,8 @@ fn revocation(file : String) -> Result<(), ApiError> {
 
 //commande a execute : openssl ca -revoke file -keyfile ACI.key -cert ACI.crt
 
+//Utilisation de Command car plus simple pour l ocsp
+
     Command::new("openssl")
     .arg("ca")
     .arg("-revoke")
@@ -109,7 +111,7 @@ fn revocation(file : String) -> Result<(), ApiError> {
 
     kill_ocsp_server(id)?; //tue le processus du serveur ocsp
 
-    run_ocsp_server()?; // relance le serveur ocsp
+    run_ocsp_server()?; // relance le serveur ocsp pour qu'il prenne en compte la révocation
 
     Ok(())
 
@@ -149,6 +151,7 @@ pub fn run_ocsp_server() -> Result<(), ApiError>{
 
     let id = process.id();
 
+    //on enregistre l'id du processus du serveur ocsp pour pouvoir le tuer et le relancer
     fs::write("ocsp_process_id", id.to_string()).map_err(|_| ApiError::new(500, "Impossible d'enregistrer le process id".to_string()))?;
 
     Ok(())

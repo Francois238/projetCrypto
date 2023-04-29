@@ -8,7 +8,7 @@ use base64::{engine::general_purpose, Engine};
 
 use super::CertificatStored;
 
-pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, ApiError> {
+pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, ApiError> { //verification de la csr
 
     let csr = X509Req::from_pem(csr_content.as_bytes()); //convertir le csr en objet rust 
     if csr.is_err() {
@@ -20,7 +20,7 @@ pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, Ap
         // Extraire le nom commun (CN) du sujet
     let subject = csr.subject_name();
 
-    let cn = subject.entries_by_nid(openssl::nid::Nid::COMMONNAME).next();
+    let cn = subject.entries_by_nid(openssl::nid::Nid::COMMONNAME).next(); //extraire le nom commun du sujet
 
     if cn.is_none() {
         return Err(ApiError::new(400, "Le CSR ne contient pas de CN".to_string()));
@@ -48,6 +48,7 @@ pub fn valide_csr(csr_content: String ,mail_user : String) -> Result<X509Req, Ap
 
     let email = email.map_err(|_| ApiError::new(400, "L'adresse e-mail du CSR n'est pas un UTF-8".to_string()))?;
 
+    // Vérifier que l'adresse e-mail du CSR correspond à l'adresse e-mail du compte
     if email.to_string() != mail_user {
         return Err(ApiError::new(400, "L'adresse e-mail du CSR ne correspond pas à l'adresse e-mail du compte".to_string()));
     }
@@ -108,7 +109,7 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
     let mut buf = [0; 20];
     rand::rand_bytes(&mut buf).unwrap();
 
-    let serial = openssl::bn::BigNum::from_slice(&buf).unwrap().to_asn1_integer().unwrap();
+    let serial = openssl::bn::BigNum::from_slice(&buf).unwrap().to_asn1_integer().unwrap(); //pour generer le serial number du certificat
 
 
        //creer un certificat avec les infos du csr
@@ -129,15 +130,20 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
    
     cert.set_issuer_name(issuer).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
 
+
+    //subject du certificat
+
     let subject = csr.subject_name();
    
     cert.set_subject_name(subject).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
+
+    //mettre la clé publique du csr dans le certificat
 
     let public_key = csr.public_key().map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
    
     cert.set_pubkey(&public_key).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
    
-    cert.set_not_before(&openssl::asn1::Asn1Time::days_from_now(0).unwrap()).unwrap(); //certificat non encore valide
+    cert.set_not_before(&openssl::asn1::Asn1Time::days_from_now(0).unwrap()).unwrap(); //certificat valide immediatement
    
     cert.set_not_after(&openssl::asn1::Asn1Time::days_from_now(90).unwrap()).unwrap(); //generer certificat valide 3 mois
    
@@ -165,6 +171,8 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
     extended_key_usage.email_protection();
    
     cert.append_extension(extended_key_usage.build().unwrap()).unwrap();
+
+    //signer le certificat
    
     cert.sign(&ca_key, openssl::hash::MessageDigest::sha256()).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
    
@@ -185,12 +193,14 @@ pub fn create_certificate(csr_content : String) -> Result<String, ApiError> {
 
 
 
-pub fn generate_otp_revocation() -> Result<String, ApiError> {
+pub fn generate_otp_revocation() -> Result<String, ApiError> { //generation d'un otp de révocation
     const OTP_LEN: usize = 18;
 
     let mut password = vec![0; OTP_LEN];
     rand::rand_bytes(&mut password).unwrap();
 
+    //Utilisation base64 pour avoir un otp de 18 caracteres avec des chiffres et des lettres
+    //URL_SAFE pour limiter les caracteres speciaux
 
     let encoded_password =  general_purpose::URL_SAFE.encode(password).replace("_", "a").replace("-", "b"); //pour n avoir que des chiffres et lettres
 
@@ -204,7 +214,7 @@ pub fn generate_otp_revocation() -> Result<String, ApiError> {
 
 pub fn generate_name_certificate() -> Result<String, ApiError> {
     
-    let name =  Uuid::new_v4(); //utilisation d'un uuid pour le nom du certificat
+    let name =  Uuid::new_v4(); //utilisation d'un uuid pour le nom du certificat, simple et efficace
 
     let name = name.to_string();
 
@@ -220,7 +230,7 @@ pub fn save_certificate(mail: String, certificat : String) -> Result<String, Api
 
     let file_path = generate_name_certificate()?; //generation d'un nom de fichier
 
-    let file_path = format!("certificate_stored/{}.crt", file_path); //ajout de l'extension .pem
+    let file_path = format!("certificate_stored/{}.crt", file_path); //ajout de l'extension .crt
 
     fs::write(file_path.clone(), certificat).map_err(|_| ApiError::new(500, "Erreur lors de la création du certificat".to_string()))?;
     
@@ -241,11 +251,11 @@ pub fn save_certificate(mail: String, certificat : String) -> Result<String, Api
 
     }
 
-    tab_cert.push(certifif);
+    tab_cert.push(certifif); //ajout de l'objet dans le tableau
 
-    let tab_cert = serde_json::to_string(&tab_cert).unwrap();
+    let tab_cert = serde_json::to_string(&tab_cert).unwrap(); 
 
-    fs::write("liste_certificats.json", tab_cert).expect("Unable to write file");
+    fs::write("liste_certificats.json", tab_cert).expect("Unable to write file"); //actualiser du json
 
 
     Ok(otp)

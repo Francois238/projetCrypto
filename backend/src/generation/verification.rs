@@ -12,7 +12,7 @@ use crate::generation::Confirmation;
 
 pub async fn send_mail(mail: String,  req_csr : String) -> Result<(), ApiError> {
 
-    let confirmation_code = generate_code();
+    let confirmation_code = generate_code(); //genere un code de confirmation
 
     store_confirmation(mail.clone(), confirmation_code.clone(), req_csr).await?;
 
@@ -42,18 +42,18 @@ let mailer = SmtpTransport::relay("smtp.gmail.com")
 }
 
 
-fn generate_code() -> String {
+fn generate_code() -> String { //genere un code de confirmation de 6 chiffres
     let mut code = [0u8; 4];
     rand::rand_bytes(&mut code).unwrap();
 
-    let code_int = u32::from_be_bytes(code) % 1_000_000;
-    format!("{:06}", code_int)
+    let code_int = u32::from_be_bytes(code) % 1_000_000; //pour que le code soit sur 6 chiffres
+    format!("{:06}", code_int) //formatage du code sur 6 chiffres avec des 0 devant si besoin
 }
 
 
 pub async fn store_confirmation(mail: String, confirmation_code : String, req_csr : String) -> Result<(), ApiError> {
 
-    println!("Confirmation code : {}", confirmation_code);
+//sauvegarde dans un fichier json le mail, le code de confirmation et la csr
 
     let confirmation = Confirmation {
         mail : mail.clone(),
@@ -85,6 +85,8 @@ pub async fn store_confirmation(mail: String, confirmation_code : String, req_cs
 
 
 pub fn verification_code(code: String, mail : &str) -> Result<String, ApiError> {
+
+    //verifie si le code de confirmation est bon et renvoie la csr
 
     let tab_verif_file = fs::read_to_string("verification.json");
 
