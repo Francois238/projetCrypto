@@ -1,1 +1,7 @@
 /target/
+/certificate_stored/*.crt
+/demoCA/index*
+verification.json
+liste_certificats.json
+liste_motifs.json
+ocsp_process_id
