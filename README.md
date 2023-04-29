@@ -47,7 +47,12 @@ Dans un second terminal, accéder au dossier AE puis
 Dans votre navigateur, vous accédez au site via [http://localhost:4200/](http://localhost:4200/)  
   
 Vous aurez besoin de générer une paire de clé, si vous ne l'avez pas fait, voici la commande :   
-`openssl ecparam -name prime256v1 -genkey -out mykey.key`
+`openssl ecparam -name prime256v1 -genkey -out mykey.key`  
+  
+Pour créer votre CSR, entrez la commande suivante :  
+`openssl req -new -key mykey.key -out moncertificat.csr`  
+  
+Sur la page *Demande de certificat*, entrez votre mail et copier-coller votre CSR. Vous serez redirigé vers une page de confirmation pour valider un code que vous recevez par mail.
   
 Une fois votre certificat reçu, conservez soigneusement votre code OTP si vous devez révoquer votre certificat.  
 Enregistrez votre certificat dans un fichier au format .crt, de même pour le certificat de l'autorité.
@@ -62,3 +67,5 @@ Si vous utilisez Thunderbird, décochez la case *Interroger le répondeur OCSP p
   
 Allez ensuite dans *Paramètres des comptes* -> sélectionnez votre mail puis sur *Chiffrement de bout en bout*. Dans la section S/MIME, cliquez sur sélectionner un certificat puis choisissez votre certificat.  
 Cochez la case *Signer les messages nons chiffés* afin de signer par défaut les mails non chiffrés.
+
+  
