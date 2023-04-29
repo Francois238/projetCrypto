@@ -1,0 +1,44 @@
+<h1 class="form-title">Confirmation de Certificat</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" formControlName="email" [ngModel]="mail">
+  </div>
+  <div class="form-group">
+    <label for="otp">Code de confirmation</label>
+    <input type="text" id="otp" formControlName="otp">
+  </div>
+  <button type="submit" [disabled]="form.invalid">
+    <i class="fa fa-paper-plane"></i> Confirmer
+  </button>
+</form>
+
+
+<ng-container *ngIf="otp.length>0" >
+
+  <div class="form-group">
+
+    <p >Votre code otp est : {{otp}}</p>
+
+
+    <label for="csr">Votre certificat</label>
+    <textarea id="csr" rows="10" cols="50" [textContent]="certificate"></textarea>
+
+    <button (click)="copyToClipboardCertificatClient()">Copier</button>
+
+    <br>
+
+    <label for="csr">Le certificat de l'autorite</label>
+    <textarea id="csr" rows="10" cols="50" [textContent]="certificateChain"></textarea>
+
+    <button (click)="copyToClipboardCertificatAuthority()">Copier</button>
+
+    
+
+  </div>
+
+</ng-container>
+
+
+<p>{{messageErreur}}</p>
