@@ -3,7 +3,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ApiCallService } from '../api-call.service';
 import { CodeSent } from '../code-sent';
 import { CertificateReceived } from '../certificate-received';
-import * as ClipboardJS from 'clipboard';
 
 @Component({
   selector: 'app-confirmation',
@@ -19,7 +18,7 @@ export class ConfirmationComponent {
   certificateChain = '';
   mail = '';
 
-  copyToClipboardCertificatClient() {
+  copyToClipboardCertificatClient() { //copier le certificat client dans le presse papier
     const textToCopy = `${this.certificate}`;
     const textarea = document.createElement('textarea');
     textarea.textContent = textToCopy;
@@ -29,7 +28,7 @@ export class ConfirmationComponent {
     document.body.removeChild(textarea);
   }
 
-  copyToClipboardCertificatAuthority() {
+  copyToClipboardCertificatAuthority() { //copier le certificat de l'autorité dans le presse papier
     const textToCopy = `${this.certificateChain}`;
     const textarea = document.createElement('textarea');
     textarea.textContent = textToCopy;
@@ -52,8 +51,6 @@ export class ConfirmationComponent {
   onSubmit() {
     if (this.form.valid) {
 
-      console.log(this.form.value.otp);
-
       let otpData = this.form.value.otp as string
 
       let OtpTtrim = otpData.trim(); //enlever les espaces debut et fin au cas ou
@@ -70,9 +67,9 @@ export class ConfirmationComponent {
 
           let certificatRecu = data.certificate;
 
-          this.certificate = window.atob(certificatRecu);
-          this.certificateChain = window.atob(data.certicate_chain);
-          this.otp = data.otp;
+          this.certificate = window.atob(certificatRecu); //décoder le certificat reçu en base64
+          this.certificateChain = window.atob(data.certicate_chain); //décoder le certificat de l'autorité recu en base64
+          this.otp = data.otp; //otp de revocation
 
         },
         error: err => {

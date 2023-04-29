@@ -23,7 +23,7 @@ export class ApiCallService {
     return this.mail;
   }
 
-  public sendCsr(csr: CsrSent): Observable<void> {
+  public sendCsr(csr: CsrSent): Observable<void> { //envoyer le csr au serveur
 
     const headers = { 'content-type': 'application/json'}
     const body=JSON.stringify(csr);
@@ -34,7 +34,7 @@ export class ApiCallService {
   }
 
 
-  public SendCode(code: CodeSent): Observable<CertificateReceived> {
+  public SendCode(code: CodeSent): Observable<CertificateReceived> { //envoyer le code au serveur
 
     const headers = { 'content-type': 'application/json'}
     const body=JSON.stringify(code);
@@ -44,7 +44,7 @@ export class ApiCallService {
     
   }
 
-  public SendRevocation(revocation : Revocation) : Observable<void> {
+  public SendRevocation(revocation : Revocation) : Observable<void> { //envoyer la demande de révocation au serveur
 
     const headers = { 'content-type': 'application/json'}
     const body=JSON.stringify(revocation);

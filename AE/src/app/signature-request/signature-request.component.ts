@@ -32,9 +32,6 @@ export class SignatureRequestComponent {
     if (this.form.valid) {
       // Submit the form
 
-      console.log(this.form.value.email);
-      console.log(this.form.value.csr);
-
       let mailContent = this.form.value.email as string
 
       let CsrContent = this.form.value.csr as string
@@ -43,9 +40,9 @@ export class SignatureRequestComponent {
 
       let CsrContenttrim = CsrContent.trim(); //enlever les espaces debut et fin au cas ou
 
-      this.apiCallService.setMail(mailContenttrim);
+      this.apiCallService.setMail(mailContenttrim); //enregistrer le mail dans le service
 
-      this.csrSent = window.btoa(CsrContenttrim);
+      this.csrSent = window.btoa(CsrContenttrim); //encoder en base64
 
       console.log(this.csrSent);
 
