@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{ App, HttpServer, http};
+use actix_web::{http, App, HttpServer};
 use revocation::run_ocsp_server;
 
 mod api_error;
@@ -8,25 +8,20 @@ mod revocation;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     env_logger::init();
 
     run_ocsp_server().expect("impossible de lancer le serveur ocsp"); //on lance le serveur ocsp pour la 1ere fois
 
-
     HttpServer::new(|| {
-            //pour faire fonctionner le front en local
+        //pour faire fonctionner le front en local
         let cors = Cors::default()
-        .allowed_origin("http://localhost:4200")
-        .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
-        .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-        .allowed_header(http::header::CONTENT_TYPE)
-        .max_age(3600);
+            .allowed_origin("http://localhost:4200")
+            .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
 
-    
-        App::new()
-        .wrap(cors)
-            .configure(generation::routes_user)
+        App::new().wrap(cors).configure(generation::routes_user)
     })
     .bind(("0.0.0.0", 8080))?
     .run()

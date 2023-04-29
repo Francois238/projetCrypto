@@ -1,10 +1,9 @@
 mod certificate;
 mod routes;
-mod verification;
 pub(crate) mod structure;
-
+mod verification;
 
 pub use certificate::*;
 pub use routes::*;
-pub use verification::*;
 pub use structure::*;
+pub use verification::*;

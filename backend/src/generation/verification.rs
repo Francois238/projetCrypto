@@ -1,6 +1,5 @@
 use std::fs;
 
-
 use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
@@ -9,40 +8,46 @@ use openssl::rand;
 use crate::api_error::ApiError;
 use crate::generation::Confirmation;
 
-
-pub async fn send_mail(mail: String,  req_csr : String) -> Result<(), ApiError> {
-
+pub async fn send_mail(mail: String, req_csr: String) -> Result<(), ApiError> {
     let confirmation_code = generate_code(); //genere un code de confirmation
 
     store_confirmation(mail.clone(), confirmation_code.clone(), req_csr).await?;
 
-    let nom = "isenprojetcrypto2023@gmail.com";  //mail cree pour le projet
+    let nom = "isenprojetcrypto2023@gmail.com"; //mail cree pour le projet
 
     let email = Message::builder()
-    .from(nom.parse().unwrap())
-    .to(mail.parse().unwrap())
-    .subject("Verification de votre mail")
-    .header(ContentType::TEXT_PLAIN)
-    .body(format!("Votre code de confirmation est : {}", confirmation_code))
-    .unwrap();
+        .from(nom.parse().unwrap())
+        .to(mail.parse().unwrap())
+        .subject("Verification de votre mail")
+        .header(ContentType::TEXT_PLAIN)
+        .body(format!(
+            "Votre code de confirmation est : {}",
+            confirmation_code
+        ))
+        .unwrap();
 
-let creds = Credentials::new("isenprojetcrypto2023@gmail.com".to_owned(), "pefekpnbfxfiwrjg".to_owned());
+    let creds = Credentials::new(
+        "isenprojetcrypto2023@gmail.com".to_owned(),
+        "pefekpnbfxfiwrjg".to_owned(),
+    );
 
-// Open a remote connection to gmail
-let mailer = SmtpTransport::relay("smtp.gmail.com")
-    .unwrap()
-    .credentials(creds)
-    .build();
+    // Open a remote connection to gmail
+    let mailer = SmtpTransport::relay("smtp.gmail.com")
+        .unwrap()
+        .credentials(creds)
+        .build();
 
     match mailer.send(&email) {
         Ok(_) => Ok(()),
-        Err(e) => Err(ApiError::new(400, format!("Erreur lors de l'envoi du mail : {}", e))),
+        Err(e) => Err(ApiError::new(
+            400,
+            format!("Erreur lors de l'envoi du mail : {}", e),
+        )),
     }
-
 }
 
-
-fn generate_code() -> String { //genere un code de confirmation de 6 chiffres
+fn generate_code() -> String {
+    //genere un code de confirmation de 6 chiffres
     let mut code = [0u8; 4];
     rand::rand_bytes(&mut code).unwrap();
 
@@ -50,25 +55,27 @@ fn generate_code() -> String { //genere un code de confirmation de 6 chiffres
     format!("{:06}", code_int) //formatage du code sur 6 chiffres avec des 0 devant si besoin
 }
 
-
-pub async fn store_confirmation(mail: String, confirmation_code : String, req_csr : String) -> Result<(), ApiError> {
-
-//sauvegarde dans un fichier json le mail, le code de confirmation et la csr
+pub async fn store_confirmation(
+    mail: String,
+    confirmation_code: String,
+    req_csr: String,
+) -> Result<(), ApiError> {
+    //sauvegarde dans un fichier json le mail, le code de confirmation et la csr
 
     let confirmation = Confirmation {
-        mail : mail.clone(),
-        confirmation_code : confirmation_code.clone(),
-        req_csr : req_csr
+        mail: mail.clone(),
+        confirmation_code: confirmation_code.clone(),
+        req_csr: req_csr,
     };
 
-    let mut tab_verif : Vec<Confirmation> = Vec::new();
+    let mut tab_verif: Vec<Confirmation> = Vec::new();
 
     let tab_verif_file = fs::read_to_string("verification.json");
 
-    if tab_verif_file.is_ok(){ //le fichier existe
+    if tab_verif_file.is_ok() {
+        //le fichier existe
 
         tab_verif = serde_json::from_str(&tab_verif_file.unwrap()).unwrap();
-
     }
 
     tab_verif.push(confirmation);
@@ -76,29 +83,28 @@ pub async fn store_confirmation(mail: String, confirmation_code : String, req_cs
     let tab_verif = serde_json::to_string(&tab_verif).unwrap();
 
     fs::write("verification.json", tab_verif).expect("Unable to write file");
-    
+
     Ok(())
-
-
-
 }
 
-
-pub fn verification_code(code: String, mail : &str) -> Result<String, ApiError> {
-
+pub fn verification_code(code: String, mail: &str) -> Result<String, ApiError> {
     //verifie si le code de confirmation est bon et renvoie la csr
 
     let tab_verif_file = fs::read_to_string("verification.json");
 
-    if tab_verif_file.is_ok(){ //le fichier existe
+    if tab_verif_file.is_ok() {
+        //le fichier existe
 
-        let mut tab_verif : Vec<Confirmation>  = serde_json::from_str(&tab_verif_file.unwrap()).unwrap();
+        let mut tab_verif: Vec<Confirmation> =
+            serde_json::from_str(&tab_verif_file.unwrap()).unwrap();
 
-        for index in 0..tab_verif.len()  { //On parcourt le tableau
+        for index in 0..tab_verif.len() {
+            //On parcourt le tableau
 
             let confirmation = &tab_verif[index];
 
-            if confirmation.confirmation_code == code && confirmation.mail == mail  { //si ok
+            if confirmation.confirmation_code == code && confirmation.mail == mail {
+                //si ok
 
                 let csr = confirmation.req_csr.clone();
 
@@ -109,12 +115,12 @@ pub fn verification_code(code: String, mail : &str) -> Result<String, ApiError> 
                 fs::write("verification.json", tab_verif).expect("Unable to write file"); //On ecrit le nouveau tableau
 
                 return Ok(csr);
-
             }
         }
-
     }
 
-    Err(ApiError::new(400, "Code de confirmation incorrect".to_string()))
-
+    Err(ApiError::new(
+        400,
+        "Code de confirmation incorrect".to_string(),
+    ))
 }
