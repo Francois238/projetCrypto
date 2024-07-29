@@ -1,71 +1,69 @@
-# __Projet cryptographie 2023 : Réalisation d'une PKI pour signature de mail__
+# __Cryptography project 2023: Implementation of a PKI for mail signature__.
 
 ## Installation
 
-Le projet a été réalisé dans un environnement linux, les installations suivantes sont valides pour ubuntu.
+The project was carried out in a Linux environment, the following installations are valid for ubuntu.
 
-* De rust :  
+* For rust:  
   
  `curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh`  
    
-Vous aurez également besoin de ce paquet pour la compilation (normalement déjà installé sous ubuntu) :  
-  
+You'll also need this package for compilation (should be already installed on ubuntu):  
 
 `sudo apt install build-essential`  
   
-Vérifiez également que openssl est installé sinon entrez : `sudo apt-get install openssl`  
+Also check that openssl is installed, otherwise enter: `sudo apt-get install openssl`  
   
-* De angular :  
+* For angular :  
   
-Si vous n'avez pas angular d'installé, lancez les commandes suivantes :  
-* pour installer le gestionnaire de paquets npm  
+- to install the npm package manager  
 `sudo apt install npm ` 
-* pour installer le gestionnaire de version de nodeJS  
+- to install the nodeJS version manager  
 `sudo npm install -g n `  
-* pour installer nodeJS  
+- to install nodeJS  
 `sudo n stable `   
-* pour installer la CLI angular  
+- to install the angular CLI  
 `sudo npm install -g @angular/cli `  
   
-## Lancement des programmes  
+## Launch of the solution
 
-* du backend en rust :
+* backend in rust :
 
-Dans un terminal, accécez au dossier backend puis lancez : `cargo run`  
-Lors du 1er lancement, le programme va être compilé ce qui peut prendre un certain temps  
+In a terminal, access the backend folder and run: `cargo run`  
+On the 1st run, the program will be compiled, which may take some time.  
 
-* du front-end en angular :  
+* front-end in angular :  
   
-Dans un second terminal, accéder au dossier AE puis
-* Pour la 1ère éxecution, entrez  
-  `npm i ` pour installer les dépendances nécessaires  
-* Pour chaque démarrage du front-end , lancez  
+In a second terminal, access the AE folder then
+* For the 1st run, enter  
+  `npm i ` to install the necessary dependencies  
+* For each front-end startup, run  
   `ng serve `
 
-## Utilisation  
+## Use  
 
-Dans votre navigateur, vous accédez au site via [http://localhost:4200/](http://localhost:4200/)  
+In your browser, access the site via [http://localhost:4200/](http://localhost:4200/)  
   
-Vous aurez besoin de générer une paire de clé, si vous ne l'avez pas fait, voici la commande :   
+You'll need to generate a key pair, if you haven't done so, here's the command:   
 `openssl ecparam -name prime256v1 -genkey -out mykey.key`  
   
-Pour créer votre CSR, entrez la commande suivante :  
-`openssl req -new -key mykey.key -out moncertificat.csr`  
+To create your CSR, enter the following command:  
+`openssl req -new -key mykey.key -out mycertificate.csr`  
   
-Sur la page *Demande de certificat*, entrez votre mail et copier-coller votre CSR. Vous serez redirigé vers une page de confirmation pour valider un code que vous recevez par mail.
+On the *Request a certificate* page, enter your e-mail address, copy and paste your CSR. You will be redirected to a confirmation page to validate a code you receive by e-mail.
   
-Une fois votre certificat reçu, conservez soigneusement votre code OTP si vous devez révoquer votre certificat.  
-Enregistrez votre certificat dans un fichier au format .crt, de même pour le certificat de l'autorité.
+Once you've received your certificate, carefully save your OTP code in case you need to revoke your certificate.  
+Save your certificate in a .crt file, as well as the authority's certificate.
   
-* Si c'est votre 1ère délivrance de certificat par notre autorité, veuillez importer le certificat de notre autorité dans les autorités de certifications de votre client mail.
+* If this is your 1st certificate issued by our authority, please import our authority's certificate into your mail client's certification authorities.
 
-Convertissez votre certificat au format pkcs12 afin qu'il soit valide pour votre client mail.  
-La commande est :  
+Convert your certificate to pkcs12 format so that it is valid for your mail client.  
+The command is :  
 `openssl pkcs12 -export -in moncertificat.crt -inkey mykey.key -out moncertificat.p12`  
   
-Si vous utilisez Thunderbird, décochez la case *Interroger le répondeur OCSP pour confirmer la validité de vos certificats* situé à la fin de la page *Vie privée et sécurité*  
+If you're using Thunderbird, uncheck the box *Query the OCSP responder to confirm the validity of your certificates* located at the end of the *Privacy and security* page.  
   
-Allez ensuite dans *Paramètres des comptes* -> sélectionnez votre mail puis sur *Chiffrement de bout en bout*. Dans la section S/MIME, cliquez sur sélectionner un certificat puis choisissez votre certificat.  
-Cochez la case *Signer les messages nons chiffés* afin de signer par défaut les mails non chiffrés.
+Then go to *Account settings* -> select your mail then *End-to-end encryption*. In the S/MIME section, click on select a certificate, then choose your certificate.  
+Check the *Sign unencrypted messages* box to sign unencrypted e-mails by default.
 
   
